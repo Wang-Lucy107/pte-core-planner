@@ -386,7 +386,8 @@
             font-size: 11px;
             font-weight: bold;
             color: white;
-            margin-left: 8px;
+            margin-left: 0;
+            margin-right: 8px;
         }
         
         .subtype-speaking { background: #f56565; }
@@ -1104,9 +1105,9 @@
                         taskItem.className = `task-item ${task.type}`;
                         taskItem.innerHTML = `
                             <input type="checkbox" class="task-checkbox" data-week="${weekName}" data-day="${dayName}" data-task="${index}">
+                            ${task.subtype ? `<span class="task-subtype-badge subtype-${task.type}">${task.subtype}</span>` : ''}
                             <div style="display: flex; align-items: center; flex: 1; flex-wrap: wrap; gap: 8px;">
                                 <span class="task-text">${task.task}</span>
-                                ${task.subtype ? `<span class="task-subtype-badge subtype-${task.type}">${task.subtype}</span>` : ''}
                                 <span class="task-time-badge">${task.time}</span>
                             </div>
                         `;
