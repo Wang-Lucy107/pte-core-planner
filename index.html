@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTE Core 个性化复习计划表</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 10px;
+            background-color: #f5f7fa;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                margin: 5px;
+            }
+        }
+        
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        
+        .header p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+                margin-bottom: 8px;
+            }
+            
+            .header p {
+                font-size: 13px;
+            }
+        }
+        
+        .control-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .control-panel {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            .mode-selector {
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+        }
+        
+        .mode-btn {
+            padding: 12px 25px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .mode-btn {
+                padding: 10px 15px;
+                font-size: 13px;
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+        
+        .mode-btn.active {
+            background: #4299e1;
+            color: white;
+            border-color: #4299e1;
+        }
+        
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .customization-area {
+            display: none;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .week-customizer {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .day-editor {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 15px;
+            align-items: start;
+            margin: 10px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .day-editor {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 12px;
+                margin: 8px 0;
+            }
+        }
+        
+        .task-editor {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .task-editor {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 8px;
+                gap: 6px;
+            }
+        }
+        
+        .task-input {
+            flex: 1;
+            margin: 0 10px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        @media (max-width: 768px) {
+            .task-input {
+                margin: 0;
+                min-width: auto;
+                width: 100%;
+            }
+        }
+        
+        .task-time {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            margin-right: 10px;
+            text-align: center;
+        }
+        
+        .task-type-select {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .task-time {
+                width: 100%;
+                margin-right: 0;
+            }
+            
+            .task-type-select {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+        
+        .delete-btn, .add-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .delete-btn {
+            background: #f56565;
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background: #e53e3e;
+        }
+        
+        .add-btn {
+            background: #48bb78;
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .add-btn:hover {
+            background: #38a169;
+        }
+        
+        .schedule-display {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .schedule-display {
+                padding: 10px;
+                margin: 10px 0;
+            }
+        }
+        
+        .week-header {
+            background: #2d3748;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px 8px 0 0;
+            font-size: 18px;
+        }
+        
+        @media (max-width: 768px) {
+            .week-header {
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+        
+        .day-row {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 20px;
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            align-items: start;
+        }
+        
+        @media (max-width: 768px) {
+            .day-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 12px;
+            }
+        }
+        
+        .day-row:last-child {
+            border-bottom: none;
+        }
+        
+        .day-label {
+            font-weight: bold;
+            background: #edf2f7;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .task-item {
+                padding: 8px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+        }
+        
+        .task-item:hover {
+            background: #edf2f7;
+        }
+        
+        .task-item.speaking { border-left-color: #f56565; }
+        .task-item.writing { border-left-color: #48bb78; }
+        .task-item.listening { border-left-color: #4299e1; }
+        .task-item.reading { border-left-color: #ed8936; }
+        
+        .task-checkbox {
+            margin-right: 12px;
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+        
+        .task-text {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 768px) {
+            .task-text {
+                font-size: 13px;
+                width: 100%;
+            }
+        }
+        
+        .task-time-badge {
+            background: #4299e1;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        
+        .progress-section {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .progress-section {
+                padding: 12px;
+                margin: 12px 0;
+            }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4299e1, #667eea);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            .action-buttons {
+                gap: 10px;
+                margin: 15px 0;
+            }
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .btn {
+                padding: 10px 15px;
+                font-size: 13px;
+                flex: 1;
+                min-width: 100px;
+                white-space: nowrap;
+            }
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary { background: #4299e1; color: white; }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-warning { background: #ed8936; color: white; }
+        .btn-danger { background: #f56565; color: white; }
+        
+        .priority-section {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .priority-section {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .priority-section p {
+                font-size: 13px;
+                line-height: 1.4;
+            }
+        }
+        
+        .priority-title {
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .tier1 { background-color: #ff6b6b; color: white; }
+        .tier2 { background-color: #ffa726; color: white; }
+        .tier3 { background-color: #66bb6a; color: white; }
+        
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .legend {
+                justify-content: center;
+                gap: 8px;
+                margin: 15px 0;
+            }
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-size: 13px;
+        }
+        
+        @media (max-width: 768px) {
+            .legend-item {
+                padding: 6px 10px;
+                font-size: 12px;
+                flex: 1;
+                min-width: 80px;
+                justify-content: center;
+            }
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+        
+        .week-editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .default-schedule-info {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 PTE Core 复习计划表</h1>
+        <p>可自定义的个性化学习计划工具</p>
+    </div>
+
+    <!-- 题型优先级说明 -->
+    <div class="priority-section">
+        <div class="priority-title tier1">第一梯队（必背题库）</div>
+        <p><strong>RA, RS, FIB-RW, FIB-L, WFD, WE</strong> - 最高优先级，必须熟练掌握</p>
+        
+        <div class="priority-title tier2">第二梯队（重要练习）</div>
+        <p><strong>SST, SWT, FIB-R, RO, DI, RTS</strong> - 高优先级，需要充分练习</p>
+        
+        <div class="priority-title tier3">第三梯队（辅助练习）</div>
+        <p><strong>ASQ, HIW, SMW, MCS, MCM</strong> - 中等优先级，熟悉题型即可</p>
+    </div>
+
+    <!-- 模式选择区域 -->
+    <div class="control-panel">
+        <h3>📋 选择模式</h3>
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="switchMode('use', this)">📚 使用模式</button>
+            <button class="mode-btn" onclick="switchMode('custom', this)">⚙️ 自定义编辑</button>
+        </div>
+
+        <!-- 自定义编辑区域 -->
+        <div id="custom-area" class="customization-area">
+            <h4>🛠️ 自定义你的学习计划：</h4>
+            <div class="default-schedule-info">
+                <h4>💡 提示</h4>
+                <p>系统已为你预设了一个标准的三周复习计划。你可以：</p>
+                <ul>
+                    <li>修改现有任务的内容和时间</li>
+                    <li>添加或删除任务</li>
+                    <li>调整任务类型</li>
+                    <li>根据自己的进度自由安排</li>
+                </ul>
+            </div>
+            <div id="week-editors"></div>
+            <button onclick="addWeek()" class="btn btn-success">+ 添加新周</button>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <button onclick="savePlan()" class="btn btn-primary">💾 保存计划</button>
+            <button onclick="exportToExcel()" class="btn btn-success">📊 导出Excel</button>
+            <button onclick="resetPlan()" class="btn btn-danger">🔄 重置计划</button>
+        </div>
+    </div>
+
+    <!-- 进度跟踪区域 -->
+    <div class="progress-section">
+        <h3>📊 学习进度</h3>
+        <div id="progress-display"></div>
+    </div>
+
+    <!-- 图例 -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: #f56565;"></div>
+            <span>口语练习</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #48bb78;"></div>
+            <span>写作练习</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #4299e1;"></div>
+            <span>听力练习</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ed8936;"></div>
+            <span>阅读练习</span>
+        </div>
+    </div>
+
+    <!-- 计划显示区域 -->
+    <div id="schedule-container"></div>
+
+    <script>
+        // 全局变量
+        let currentSchedule = {};
+        let currentMode = 'use';
+
+        // 默认标准计划
+        const defaultSchedule = {
+            name: "标准三周计划",
+            weeks: {
+                "第一周": {
+                    "周一": [
+                        {type: "speaking", task: "RA 5题练习，目标CLB7(70+)/CLB8(75+)/CLB9(85+)", time: "15分钟"},
+                        {type: "writing", task: "WE #1, #5 写作并背熟", time: "30分钟"},
+                        {type: "writing", task: "SST #2 写作并背熟", time: "15分钟"},
+                        {type: "reading", task: "FIB-RW 第一遍 (1/3) - PTE题库Reading", time: "30分钟"}
+                    ],
+                    "周二": [
+                        {type: "speaking", task: "RS 背题库第一遍 (1/3) - PTE题库Speaking", time: "30分钟"},
+                        {type: "writing", task: "WE #2, #3, #4 写作并背熟", time: "45分钟"},
+                        {type: "reading", task: "FIB-RW 第一遍 (2/3) - PTE题库Reading", time: "30分钟"}
+                    ],
+                    "周三": [
+                        {type: "speaking", task: "RA 5题练习", time: "15分钟"},
+                        {type: "writing", task: "SWT #1-6, #8 写作并背熟", time: "45分钟"},
+                        {type: "reading", task: "FIB-RW 第一遍 (3/3) - PTE题库Reading", time: "30分钟"}
+                    ],
+                    "周四": [
+                        {type: "speaking", task: "RS 背题库第一遍 (2/3) - PTE题库Speaking", time: "30分钟"},
+                        {type: "writing", task: "SST #1-6, #8 写作并背熟", time: "45分钟"},
+                        {type: "reading", task: "FIB-R 第一遍 (1/2) - PTE题库Reading", time: "30分钟"}
+                    ],
+                    "周五": [
+                        {type: "speaking", task: "RS 背题库第一遍 (3/3) - PTE题库Speaking", time: "30分钟"},
+                        {type: "writing", task: "WE #6-8 写作并背熟", time: "45分钟"},
+                        {type: "reading", task: "FIB-R 第一遍 (2/2) - PTE题库Reading", time: "30分钟"}
+                    ],
+                    "周六": [
+                        {type: "speaking", task: "RA 5题练习", time: "15分钟"},
+                        {type: "writing", task: "WE #9-10 写作并背熟", time: "45分钟"},
+                        {type: "reading", task: "复习本周FIB-RW和FIB-R", time: "60分钟"}
+                    ]
+                },
+                "第二周": {
+                    "周一": [
+                        {type: "speaking", task: "DI 5题, RTS 5题, ASQ (1/4)", time: "20分钟"},
+                        {type: "writing", task: "WE #11-14", time: "45分钟"},
+                        {type: "listening", task: "FIB-L 单词表 + 练习PDF (1/3)", time: "45分钟"}
+                    ],
+                    "周二": [
+                        {type: "speaking", task: "RS 背题库第二遍 (1/2)", time: "30分钟"},
+                        {type: "writing", task: "复习所有写过的WE", time: "30分钟"},
+                        {type: "listening", task: "FIB-L 练习PDF (2/3)", time: "45分钟"}
+                    ],
+                    "周三": [
+                        {type: "speaking", task: "RA 5题, ASQ (2/4)", time: "20分钟"},
+                        {type: "listening", task: "WFD 背题库第一遍 (1/4)", time: "45分钟"},
+                        {type: "listening", task: "FIB-L 练习PDF (3/3)", time: "45分钟"}
+                    ],
+                    "周四": [
+                        {type: "speaking", task: "RS 背题库第二遍 (2/2)", time: "30分钟"},
+                        {type: "listening", task: "WFD 背题库第一遍 (2/4)", time: "45分钟"},
+                        {type: "listening", task: "背所有练习过的FIB-L单词", time: "45分钟"}
+                    ],
+                    "周五": [
+                        {type: "speaking", task: "DI 5题, RTS 5题, ASQ (3/4)", time: "20分钟"},
+                        {type: "listening", task: "WFD 背题库第一遍 (3/4)", time: "45分钟"},
+                        {type: "reading", task: "FIB-R 第二遍 (1/2)", time: "45分钟"}
+                    ],
+                    "周六": [
+                        {type: "speaking", task: "RA 5题, ASQ (4/4)", time: "20分钟"},
+                        {type: "listening", task: "WFD 背题库第一遍 (4/4)", time: "45分钟"},
+                        {type: "listening", task: "复习本周所有FIB-L", time: "60分钟"}
+                    ]
+                },
+                "第三周": {
+                    "周一": [
+                        {type: "speaking", task: "RS 第二遍 (1/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
+                        {type: "writing", task: "复习 WE, SST, SWT", time: "45分钟"},
+                        {type: "listening", task: "FIB-L 第二遍 (1/2) + FIB-RW 第二遍 (1/2)", time: "45分钟"}
+                    ],
+                    "周二": [
+                        {type: "speaking", task: "RS 第二遍 (2/3) + RA 5题 + 复习RTS, DI, ASQ", time: "30分钟"},
+                        {type: "listening", task: "WFD 背题库第二遍 (1/3)", time: "45分钟"},
+                        {type: "reading", task: "RO 顺口溜第一遍 + FIB-R 第二遍 (1/2)", time: "60分钟"}
+                    ],
+                    "周三": [
+                        {type: "speaking", task: "RS 第二遍 (3/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
+                        {type: "listening", task: "WFD 背题库第二遍 (2/3)", time: "45分钟"},
+                        {type: "listening", task: "FIB-L 第二遍 (2/2) + FIB-RW 第二遍 (2/2)", time: "45分钟"}
+                    ],
+                    "周四": [
+                        {type: "speaking", task: "RS 第三遍 (1/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
+                        {type: "listening", task: "WFD 背题库第二遍 (3/3)", time: "45分钟"},
+                        {type: "reading", task: "RO 顺口溜第二遍 + FIB-R 第二遍 (2/2)", time: "60分钟"}
+                    ],
+                    "周五": [
+                        {type: "speaking", task: "RS 第三遍 (2/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
+                        {type: "writing", task: "复习 WE, SST, SWT", time: "45分钟"},
+                        {type: "listening", task: "FIB-L 第三遍完整复习 + FIB-RW 第三遍", time: "45分钟"}
+                    ],
+                    "周六": [
+                        {type: "speaking", task: "RS 第三遍 (3/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
+                        {type: "listening", task: "WFD 背题库第三遍完整复习", time: "45分钟"},
+                        {type: "reading", task: "总复习 FIB-RW, FIB-L, FIB-R, RO", time: "60分钟"}
+                    ]
+                }
+            }
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDefaultSchedule();
+            updateDisplay();
+            loadProgress();
+        });
+
+        // 加载默认计划
+        function loadDefaultSchedule() {
+            const saved = loadPlan();
+            if (saved && saved.weeks) {
+                currentSchedule = saved;
+            } else {
+                currentSchedule = JSON.parse(JSON.stringify(defaultSchedule));
+            }
+        }
+
+        // 模式切换
+        function switchMode(mode, element) {
+            currentMode = mode;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (element) {
+                element.classList.add('active');
+            }
+            
+            // 显示/隐藏对应区域
+            document.querySelectorAll('.customization-area').forEach(area => {
+                area.style.display = 'none';
+            });
+            
+            if (mode === 'custom') {
+                document.getElementById('custom-area').style.display = 'block';
+                generateWeekEditors();
+            }
+        }
+
+        // 生成周编辑器
+        function generateWeekEditors() {
+            const container = document.getElementById('week-editors');
+            container.innerHTML = '';
+            
+            Object.keys(currentSchedule.weeks || {}).forEach(weekName => {
+                const weekDiv = document.createElement('div');
+                weekDiv.className = 'week-customizer';
+                weekDiv.innerHTML = `
+                    <div class="week-editor-header">
+                        <h4>${weekName}</h4>
+                        <button onclick="deleteWeek('${weekName}')" class="delete-btn">删除周</button>
+                    </div>
+                    <div id="days-${weekName}"></div>
+                    <button onclick="addDay('${weekName}')" class="add-btn">+ 添加新一天</button>
+                `;
+                container.appendChild(weekDiv);
+                
+                generateDayEditors(weekName);
+            });
+        }
+
+        // 生成天编辑器
+        function generateDayEditors(weekName) {
+            const container = document.getElementById(`days-${weekName}`);
+            container.innerHTML = '';
+            
+            Object.keys(currentSchedule.weeks[weekName] || {}).forEach(dayName => {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day-editor';
+                dayDiv.innerHTML = `
+                    <div>
+                        <div class="day-label">${dayName}</div>
+                        <button onclick="deleteDay('${weekName}', '${dayName}')" class="delete-btn" style="margin-top: 10px;">删除天</button>
+                    </div>
+                    <div id="tasks-${weekName}-${dayName}"></div>
+                `;
+                container.appendChild(dayDiv);
+                
+                generateTaskEditors(weekName, dayName);
+                
+                const addTaskBtn = document.createElement('button');
+                addTaskBtn.className = 'add-btn';
+                addTaskBtn.textContent = '+ 添加任务';
+                addTaskBtn.onclick = () => addTask(weekName, dayName);
+                dayDiv.querySelector(`#tasks-${weekName}-${dayName}`).appendChild(addTaskBtn);
+            });
+        }
+
+        // 生成任务编辑器
+        function generateTaskEditors(weekName, dayName) {
+            const container = document.getElementById(`tasks-${weekName}-${dayName}`);
+            const tasks = currentSchedule.weeks[weekName][dayName] || [];
+            
+            tasks.forEach((task, index) => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = 'task-editor';
+                taskDiv.innerHTML = `
+                    <select class="task-type-select" onchange="updateTask('${weekName}', '${dayName}', ${index}, 'type', this.value)">
+                        <option value="speaking" ${task.type === 'speaking' ? 'selected' : ''}>口语</option>
+                        <option value="writing" ${task.type === 'writing' ? 'selected' : ''}>写作</option>
+                        <option value="listening" ${task.type === 'listening' ? 'selected' : ''}>听力</option>
+                        <option value="reading" ${task.type === 'reading' ? 'selected' : ''}>阅读</option>
+                    </select>
+                    <input type="text" class="task-input" value="${task.task}" 
+                           onchange="updateTask('${weekName}', '${dayName}', ${index}, 'task', this.value)" 
+                           placeholder="任务描述">
+                    <input type="text" class="task-time" value="${task.time}" 
+                           onchange="updateTask('${weekName}', '${dayName}', ${index}, 'time', this.value)" 
+                           placeholder="时间">
+                    <button onclick="deleteTask('${weekName}', '${dayName}', ${index})" class="delete-btn">删除</button>
+                `;
+                container.appendChild(taskDiv);
+            });
+        }
+
+        // 更新任务
+        function updateTask(weekName, dayName, taskIndex, field, value) {
+            if (!currentSchedule.weeks[weekName] || !currentSchedule.weeks[weekName][dayName]) return;
+            
+            if (currentSchedule.weeks[weekName][dayName][taskIndex]) {
+                currentSchedule.weeks[weekName][dayName][taskIndex][field] = value;
+                updateDisplay();
+            }
+        }
+
+        // 添加任务
+        function addTask(weekName, dayName) {
+            if (!currentSchedule.weeks[weekName]) currentSchedule.weeks[weekName] = {};
+            if (!currentSchedule.weeks[weekName][dayName]) currentSchedule.weeks[weekName][dayName] = [];
+            
+            currentSchedule.weeks[weekName][dayName].push({
+                type: 'speaking',
+                task: '新任务',
+                time: '30分钟'
+            });
+            
+            generateDayEditors(weekName);
+            updateDisplay();
+        }
+
+        // 删除任务
+        function deleteTask(weekName, dayName, taskIndex) {
+            if (confirm('确定删除这个任务吗？')) {
+                currentSchedule.weeks[weekName][dayName].splice(taskIndex, 1);
+                generateDayEditors(weekName);
+                updateDisplay();
+            }
+        }
+
+        // 添加天
+        function addDay(weekName) {
+            const dayName = prompt('请输入新一天的名称（如：周日）：');
+            if (dayName && dayName.trim()) {
+                if (!currentSchedule.weeks[weekName][dayName.trim()]) {
+                    currentSchedule.weeks[weekName][dayName.trim()] = [];
+                    generateDayEditors(weekName);
+                } else {
+                    alert('该天已存在！');
+                }
+            }
+        }
+
+        // 删除天
+        function deleteDay(weekName, dayName) {
+            if (confirm(`确定删除 ${dayName} 吗？`)) {
+                delete currentSchedule.weeks[weekName][dayName];
+                generateDayEditors(weekName);
+                updateDisplay();
+            }
+        }
+
+        // 添加周
+        function addWeek() {
+            const weekName = prompt('请输入新周的名称（如：第四周）：');
+            if (weekName && weekName.trim()) {
+                if (!currentSchedule.weeks) currentSchedule.weeks = {};
+                if (!currentSchedule.weeks[weekName.trim()]) {
+                    currentSchedule.weeks[weekName.trim()] = {};
+                    generateWeekEditors();
+                } else {
+                    alert('该周已存在！');
+                }
+            }
+        }
+
+        // 删除周
+        function deleteWeek(weekName) {
+            if (confirm(`确定删除 ${weekName} 吗？`)) {
+                delete currentSchedule.weeks[weekName];
+                generateWeekEditors();
+                updateDisplay();
+            }
+        }
+
+        // 更新显示
+        function updateDisplay() {
+            const container = document.getElementById('schedule-container');
+            container.innerHTML = '';
+            
+            if (!currentSchedule.weeks) return;
+            
+            Object.keys(currentSchedule.weeks).forEach(weekName => {
+                const weekDiv = document.createElement('div');
+                weekDiv.className = 'schedule-display';
+                
+                const weekHeader = document.createElement('div');
+                weekHeader.className = 'week-header';
+                weekHeader.textContent = weekName;
+                weekDiv.appendChild(weekHeader);
+                
+                Object.keys(currentSchedule.weeks[weekName]).forEach(dayName => {
+                    const dayRow = document.createElement('div');
+                    dayRow.className = 'day-row';
+                    
+                    const dayLabel = document.createElement('div');
+                    dayLabel.className = 'day-label';
+                    dayLabel.textContent = dayName;
+                    
+                    const taskList = document.createElement('div');
+                    taskList.className = 'task-list';
+                    
+                    currentSchedule.weeks[weekName][dayName].forEach((task, index) => {
+                        const taskItem = document.createElement('div');
+                        taskItem.className = `task-item ${task.type}`;
+                        taskItem.innerHTML = `
+                            <input type="checkbox" class="task-checkbox" data-week="${weekName}" data-day="${dayName}" data-task="${index}">
+                            <div style="display: flex; align-items: center; flex: 1; flex-wrap: wrap; gap: 8px;">
+                                <span class="task-text">${task.task}</span>
+                                <span class="task-time-badge">${task.time}</span>
+                            </div>
+                        `;
+                        taskList.appendChild(taskItem);
+                    });
+                    
+                    dayRow.appendChild(dayLabel);
+                    dayRow.appendChild(taskList);
+                    weekDiv.appendChild(dayRow);
+                });
+                
+                container.appendChild(weekDiv);
+            });
+            
+            updateProgress();
+            attachCheckboxListeners();
+        }
+
+        // 附加复选框监听器
+        function attachCheckboxListeners() {
+            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateProgress();
+                    saveProgress();
+                });
+            });
+        }
+
+        // 更新进度
+        function updateProgress() {
+            const progressDisplay = document.getElementById('progress-display');
+            progressDisplay.innerHTML = '';
+            
+            if (!currentSchedule.weeks) return;
+            
+            let totalTasks = 0;
+            let completedTasks = 0;
+            
+            Object.keys(currentSchedule.weeks).forEach(weekName => {
+                const weekCheckboxes = document.querySelectorAll(`input[data-week="${weekName}"]`);
+                const weekChecked = document.querySelectorAll(`input[data-week="${weekName}"]:checked`);
+                const weekProgress = weekCheckboxes.length > 0 ? Math.round((weekChecked.length / weekCheckboxes.length) * 100) : 0;
+                
+                totalTasks += weekCheckboxes.length;
+                completedTasks += weekChecked.length;
+                
+                const weekProgressDiv = document.createElement('div');
+                weekProgressDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span><strong>${weekName}</strong></span>
+                        <span>${weekProgress}% (${weekChecked.length}/${weekCheckboxes.length})</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${weekProgress}%"></div>
+                    </div>
+                    <div style="margin-bottom: 15px;"></div>
+                `;
+                progressDisplay.appendChild(weekProgressDiv);
+            });
+            
+            // 总体进度
+            const totalProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            const totalProgressDiv = document.createElement('div');
+            totalProgressDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 18px;">
+                    <span><strong>🎯 总体进度</strong></span>
+                    <span><strong>${totalProgress}% (${completedTasks}/${totalTasks})</strong></span>
+                </div>
+                <div class="progress-bar" style="height: 25px;">
+                    <div class="progress-fill" style="width: ${totalProgress}%"></div>
+                </div>
+            `;
+            progressDisplay.insertBefore(totalProgressDiv, progressDisplay.firstChild);
+        }
+
+        // 保存进度
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const progress = {};
+            checkboxes.forEach(checkbox => {
+                const key = `${checkbox.dataset.week}-${checkbox.dataset.day}-${checkbox.dataset.task}`;
+                progress[key] = checkbox.checked;
+            });
+            
+            try {
+                localStorage.setItem('pte_progress', JSON.stringify(progress));
+            } catch (e) {
+                console.log('无法保存进度');
+            }
+        }
+
+        // 加载进度
+        function loadProgress() {
+            try {
+                const progress = JSON.parse(localStorage.getItem('pte_progress')) || {};
+                document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                    const key = `${checkbox.dataset.week}-${checkbox.dataset.day}-${checkbox.dataset.task}`;
+                    if (progress[key]) {
+                        checkbox.checked = true;
+                    }
+                });
+                updateProgress();
+            } catch (e) {
+                console.log('无法加载进度');
+            }
+        }
+
+        // 保存计划
+        function savePlan() {
+            try {
+                localStorage.setItem('pte_custom_plan', JSON.stringify(currentSchedule));
+                alert('✅ 计划已保存到本地！');
+            } catch (e) {
+                alert('❌ 保存失败，请检查浏览器设置');
+            }
+        }
+
+        // 加载计划
+        function loadPlan() {
+            try {
+                const saved = localStorage.getItem('pte_custom_plan');
+                return saved ? JSON.parse(saved) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // 导出Excel格式
+        function exportToExcel() {
+            let csvContent = "周次,日期,任务类型,任务内容,时间,完成状态\n";
+            
+            Object.keys(currentSchedule.weeks).forEach(weekName => {
+                Object.keys(currentSchedule.weeks[weekName]).forEach(dayName => {
+                    currentSchedule.weeks[weekName][dayName].forEach((task, index) => {
+                        const checkbox = document.querySelector(`input[data-week="${weekName}"][data-day="${dayName}"][data-task="${index}"]`);
+                        const status = checkbox && checkbox.checked ? "已完成" : "未完成";
+                        const typeMap = {
+                            speaking: "口语",
+                            writing: "写作", 
+                            listening: "听力",
+                            reading: "阅读"
+                        };
+                        
+                        csvContent += `"${weekName}","${dayName}","${typeMap[task.type]}","${task.task}","${task.time}","${status}"\n`;
+                    });
+                });
+            });
+            
+            // 创建下载链接
+            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `PTE_Core_复习计划_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('📊 Excel文件已导出！\n\n💡 使用说明：\n• 用Excel或WPS打开下载的CSV文件\n• 可以进一步编辑和美化\n• 分享给朋友或导师查看进度');
+        }
+
+        // 重置计划
+        function resetPlan() {
+            if (confirm('🔄 确定要重置吗？\n\n这将：\n• 恢复到默认的三周计划\n• 清除所有学习进度\n• 删除自定义修改\n\n此操作不可恢复！')) {
+                currentSchedule = JSON.parse(JSON.stringify(defaultSchedule));
+                
+                updateDisplay();
+                
+                try {
+                    localStorage.removeItem('pte_custom_plan');
+                    localStorage.removeItem('pte_progress');
+                } catch (e) {
+                    console.log('无法清除本地存储');
+                }
+                
+                // 如果在编辑模式，重新生成编辑器
+                if (currentMode === 'custom') {
+                    generateWeekEditors();
+                }
+                
+                alert('✅ 已重置为默认计划！');
+            }
+        }
+    </script>
+</body>
+</html>
