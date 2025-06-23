@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PTE Core 个性化复习计划表</title>
+    <title>PTE Core 个性化复习计划表 V2.0</title>
     <style>
         body {
             font-family: 'Microsoft YaHei', Arial, sans-serif;
@@ -200,12 +200,16 @@
             text-align: center;
         }
         
-        .task-type-select {
+        .task-type-select, .task-subtype-select {
             width: 100px;
             padding: 8px;
             border: 1px solid #e2e8f0;
             border-radius: 5px;
             margin-right: 10px;
+        }
+        
+        .task-subtype-select {
+            width: 120px;
         }
         
         @media (max-width: 768px) {
@@ -214,7 +218,7 @@
                 margin-right: 0;
             }
             
-            .task-type-select {
+            .task-type-select, .task-subtype-select {
                 width: 100%;
                 margin-right: 0;
             }
@@ -375,6 +379,20 @@
             margin-left: 10px;
             font-weight: bold;
         }
+        
+        .task-subtype-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            margin-left: 8px;
+        }
+        
+        .subtype-speaking { background: #f56565; }
+        .subtype-writing { background: #48bb78; }
+        .subtype-listening { background: #4299e1; }
+        .subtype-reading { background: #ed8936; }
         
         .progress-section {
             background: white;
@@ -541,12 +559,50 @@
             padding: 15px;
             margin: 20px 0;
         }
+        
+        .subtype-info {
+            background: #f0f9ff;
+            border: 1px solid #90cdf4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .subtype-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .subtype-category {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid;
+        }
+        
+        .subtype-category.speaking { border-left-color: #f56565; }
+        .subtype-category.writing { border-left-color: #48bb78; }
+        .subtype-category.reading { border-left-color: #ed8936; }
+        .subtype-category.listening { border-left-color: #4299e1; }
+        
+        .subtype-category h5 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+        
+        .subtype-category p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🎯 PTE Core 复习计划表</h1>
-        <p>可自定义的个性化学习计划工具</p>
+        <h1>🎯 PTE Core 复习计划表 V2.0</h1>
+        <p>支持题型分类的个性化学习计划工具</p>
     </div>
 
     <!-- 题型优先级说明 -->
@@ -559,6 +615,29 @@
         
         <div class="priority-title tier3">第三梯队（辅助练习）</div>
         <p><strong>ASQ, HIW, SMW, MCS, MCM</strong> - 中等优先级，熟悉题型即可</p>
+    </div>
+
+    <!-- 题型分类说明 -->
+    <div class="subtype-info">
+        <h4>📑 题型分类说明</h4>
+        <div class="subtype-grid">
+            <div class="subtype-category speaking">
+                <h5>🗣️ 口语题型</h5>
+                <p>RA, RS, DI, RTS, ASQ</p>
+            </div>
+            <div class="subtype-category writing">
+                <h5>✍️ 写作题型</h5>
+                <p>WE, SWT</p>
+            </div>
+            <div class="subtype-category reading">
+                <h5>📖 阅读题型</h5>
+                <p>FIB-RW, MCM-R, RO, FIB-R, MCS-R</p>
+            </div>
+            <div class="subtype-category listening">
+                <h5>👂 听力题型</h5>
+                <p>SST, MCM-L, FIB-L, MCS-L, SMW, HIW, WFD</p>
+            </div>
+        </div>
     </div>
 
     <!-- 模式选择区域 -->
@@ -577,8 +656,8 @@
                 <p>系统已为你预设了一个标准的三周复习计划。你可以：</p>
                 <ul>
                     <li>修改现有任务的内容和时间</li>
+                    <li>选择具体的题型（如RA、RS等）</li>
                     <li>添加或删除任务</li>
-                    <li>调整任务类型</li>
                     <li>根据自己的进度自由安排</li>
                 </ul>
             </div>
@@ -628,105 +707,144 @@
         let currentSchedule = {};
         let currentMode = 'use';
 
+        // 题型映射
+        const subtypeMap = {
+            speaking: {
+                name: "口语",
+                subtypes: ["RA", "RS", "DI", "RTS", "ASQ"]
+            },
+            writing: {
+                name: "写作",
+                subtypes: ["WE", "SWT"]
+            },
+            reading: {
+                name: "阅读",
+                subtypes: ["FIB-RW", "MCM-R", "RO", "FIB-R", "MCS-R"]
+            },
+            listening: {
+                name: "听力",
+                subtypes: ["SST", "MCM-L", "FIB-L", "MCS-L", "SMW", "HIW", "WFD"]
+            }
+        };
+
         // 默认标准计划
         const defaultSchedule = {
             name: "标准三周计划",
             weeks: {
                 "第一周": {
                     "周一": [
-                        {type: "speaking", task: "RA 5题练习，目标CLB7(70+)/CLB8(75+)/CLB9(85+)", time: "15分钟"},
-                        {type: "writing", task: "WE #1, #5 写作并背熟", time: "30分钟"},
-                        {type: "writing", task: "SST #2 写作并背熟", time: "15分钟"},
-                        {type: "reading", task: "FIB-RW 第一遍 (1/3) - PTE题库Reading", time: "30分钟"}
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习，目标CLB7(70+)/CLB8(75+)/CLB9(85+)", time: "15分钟"},
+                        {type: "writing", subtype: "WE", task: "WE #1, #5 写作并背熟", time: "30分钟"},
+                        {type: "listening", subtype: "SST", task: "SST #2 写作并背熟", time: "15分钟"},
+                        {type: "reading", subtype: "FIB-RW", task: "FIB-RW 第一遍 (1/3) - PTE题库Reading", time: "30分钟"}
                     ],
                     "周二": [
-                        {type: "speaking", task: "RS 背题库第一遍 (1/3) - PTE题库Speaking", time: "30分钟"},
-                        {type: "writing", task: "WE #2, #3, #4 写作并背熟", time: "45分钟"},
-                        {type: "reading", task: "FIB-RW 第一遍 (2/3) - PTE题库Reading", time: "30分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 背题库第一遍 (1/3) - PTE题库Speaking", time: "30分钟"},
+                        {type: "writing", subtype: "WE", task: "WE #2, #3, #4 写作并背熟", time: "45分钟"},
+                        {type: "reading", subtype: "FIB-RW", task: "FIB-RW 第一遍 (2/3) - PTE题库Reading", time: "30分钟"}
                     ],
                     "周三": [
-                        {type: "speaking", task: "RA 5题练习", time: "15分钟"},
-                        {type: "writing", task: "SWT #1-6, #8 写作并背熟", time: "45分钟"},
-                        {type: "reading", task: "FIB-RW 第一遍 (3/3) - PTE题库Reading", time: "30分钟"}
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "15分钟"},
+                        {type: "writing", subtype: "SWT", task: "SWT #1-6, #8 写作并背熟", time: "45分钟"},
+                        {type: "reading", subtype: "FIB-RW", task: "FIB-RW 第一遍 (3/3) - PTE题库Reading", time: "30分钟"}
                     ],
                     "周四": [
-                        {type: "speaking", task: "RS 背题库第一遍 (2/3) - PTE题库Speaking", time: "30分钟"},
-                        {type: "writing", task: "SST #1-6, #8 写作并背熟", time: "45分钟"},
-                        {type: "reading", task: "FIB-R 第一遍 (1/2) - PTE题库Reading", time: "30分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 背题库第一遍 (2/3) - PTE题库Speaking", time: "30分钟"},
+                        {type: "listening", subtype: "SST", task: "SST #1-6, #8 写作并背熟", time: "45分钟"},
+                        {type: "reading", subtype: "FIB-R", task: "FIB-R 第一遍 (1/2) - PTE题库Reading", time: "30分钟"}
                     ],
                     "周五": [
-                        {type: "speaking", task: "RS 背题库第一遍 (3/3) - PTE题库Speaking", time: "30分钟"},
-                        {type: "writing", task: "WE #6-8 写作并背熟", time: "45分钟"},
-                        {type: "reading", task: "FIB-R 第一遍 (2/2) - PTE题库Reading", time: "30分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 背题库第一遍 (3/3) - PTE题库Speaking", time: "30分钟"},
+                        {type: "writing", subtype: "WE", task: "WE #6-8 写作并背熟", time: "45分钟"},
+                        {type: "reading", subtype: "FIB-R", task: "FIB-R 第一遍 (2/2) - PTE题库Reading", time: "30分钟"}
                     ],
                     "周六": [
-                        {type: "speaking", task: "RA 5题练习", time: "15分钟"},
-                        {type: "writing", task: "WE #9-10 写作并背熟", time: "45分钟"},
-                        {type: "reading", task: "复习本周FIB-RW和FIB-R", time: "60分钟"}
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "15分钟"},
+                        {type: "writing", subtype: "WE", task: "WE #9-10 写作并背熟", time: "45分钟"},
+                        {type: "reading", subtype: "FIB-RW", task: "复习本周FIB-RW和FIB-R", time: "60分钟"}
                     ]
                 },
                 "第二周": {
                     "周一": [
-                        {type: "speaking", task: "DI 5题, RTS 5题, ASQ (1/4)", time: "20分钟"},
-                        {type: "writing", task: "WE #11-14", time: "45分钟"},
-                        {type: "listening", task: "FIB-L 单词表 + 练习PDF (1/3)", time: "45分钟"}
+                        {type: "speaking", subtype: "DI", task: "DI 5题练习", time: "10分钟"},
+                        {type: "speaking", subtype: "RTS", task: "RTS 5题练习", time: "10分钟"},
+                        {type: "speaking", subtype: "ASQ", task: "ASQ (1/4)", time: "10分钟"},
+                        {type: "writing", subtype: "WE", task: "WE #11-14", time: "45分钟"},
+                        {type: "listening", subtype: "FIB-L", task: "FIB-L 单词表 + 练习PDF (1/3)", time: "45分钟"}
                     ],
                     "周二": [
-                        {type: "speaking", task: "RS 背题库第二遍 (1/2)", time: "30分钟"},
-                        {type: "writing", task: "复习所有写过的WE", time: "30分钟"},
-                        {type: "listening", task: "FIB-L 练习PDF (2/3)", time: "45分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 背题库第二遍 (1/2)", time: "30分钟"},
+                        {type: "writing", subtype: "WE", task: "复习所有写过的WE", time: "30分钟"},
+                        {type: "listening", subtype: "FIB-L", task: "FIB-L 练习PDF (2/3)", time: "45分钟"}
                     ],
                     "周三": [
-                        {type: "speaking", task: "RA 5题, ASQ (2/4)", time: "20分钟"},
-                        {type: "listening", task: "WFD 背题库第一遍 (1/4)", time: "45分钟"},
-                        {type: "listening", task: "FIB-L 练习PDF (3/3)", time: "45分钟"}
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
+                        {type: "speaking", subtype: "ASQ", task: "ASQ (2/4)", time: "10分钟"},
+                        {type: "listening", subtype: "WFD", task: "WFD 背题库第一遍 (1/4)", time: "45分钟"},
+                        {type: "listening", subtype: "FIB-L", task: "FIB-L 练习PDF (3/3)", time: "45分钟"}
                     ],
                     "周四": [
-                        {type: "speaking", task: "RS 背题库第二遍 (2/2)", time: "30分钟"},
-                        {type: "listening", task: "WFD 背题库第一遍 (2/4)", time: "45分钟"},
-                        {type: "listening", task: "背所有练习过的FIB-L单词", time: "45分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 背题库第二遍 (2/2)", time: "30分钟"},
+                        {type: "listening", subtype: "WFD", task: "WFD 背题库第一遍 (2/4)", time: "45分钟"},
+                        {type: "listening", subtype: "FIB-L", task: "背所有练习过的FIB-L单词", time: "45分钟"}
                     ],
                     "周五": [
-                        {type: "speaking", task: "DI 5题, RTS 5题, ASQ (3/4)", time: "20分钟"},
-                        {type: "listening", task: "WFD 背题库第一遍 (3/4)", time: "45分钟"},
-                        {type: "reading", task: "FIB-R 第二遍 (1/2)", time: "45分钟"}
+                        {type: "speaking", subtype: "DI", task: "DI 5题练习", time: "10分钟"},
+                        {type: "speaking", subtype: "RTS", task: "RTS 5题练习", time: "10分钟"},
+                        {type: "speaking", subtype: "ASQ", task: "ASQ (3/4)", time: "10分钟"},
+                        {type: "listening", subtype: "WFD", task: "WFD 背题库第一遍 (3/4)", time: "45分钟"},
+                        {type: "reading", subtype: "FIB-R", task: "FIB-R 第二遍 (1/2)", time: "45分钟"}
                     ],
                     "周六": [
-                        {type: "speaking", task: "RA 5题, ASQ (4/4)", time: "20分钟"},
-                        {type: "listening", task: "WFD 背题库第一遍 (4/4)", time: "45分钟"},
-                        {type: "listening", task: "复习本周所有FIB-L", time: "60分钟"}
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
+                        {type: "speaking", subtype: "ASQ", task: "ASQ (4/4)", time: "10分钟"},
+                        {type: "listening", subtype: "WFD", task: "WFD 背题库第一遍 (4/4)", time: "45分钟"},
+                        {type: "listening", subtype: "FIB-L", task: "复习本周所有FIB-L", time: "60分钟"}
                     ]
                 },
                 "第三周": {
                     "周一": [
-                        {type: "speaking", task: "RS 第二遍 (1/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
-                        {type: "writing", task: "复习 WE, SST, SWT", time: "45分钟"},
-                        {type: "listening", task: "FIB-L 第二遍 (1/2) + FIB-RW 第二遍 (1/2)", time: "45分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 第二遍 (1/3)", time: "15分钟"},
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
+                        {type: "writing", subtype: "WE", task: "复习 WE, SWT", time: "30分钟"},
+                        {type: "listening", subtype: "SST", task: "复习 SST", time: "15分钟"},
+                        {type: "listening", subtype: "FIB-L", task: "FIB-L 第二遍 (1/2)", time: "25分钟"},
+                        {type: "reading", subtype: "FIB-RW", task: "FIB-RW 第二遍 (1/2)", time: "20分钟"}
                     ],
                     "周二": [
-                        {type: "speaking", task: "RS 第二遍 (2/3) + RA 5题 + 复习RTS, DI, ASQ", time: "30分钟"},
-                        {type: "listening", task: "WFD 背题库第二遍 (1/3)", time: "45分钟"},
-                        {type: "reading", task: "RO 顺口溜第一遍 + FIB-R 第二遍 (1/2)", time: "60分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 第二遍 (2/3)", time: "20分钟"},
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
+                        {type: "listening", subtype: "WFD", task: "WFD 背题库第二遍 (1/3)", time: "45分钟"},
+                        {type: "reading", subtype: "RO", task: "RO 顺口溜第一遍", time: "30分钟"},
+                        {type: "reading", subtype: "FIB-R", task: "FIB-R 第二遍 (1/2)", time: "30分钟"}
                     ],
                     "周三": [
-                        {type: "speaking", task: "RS 第二遍 (3/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
-                        {type: "listening", task: "WFD 背题库第二遍 (2/3)", time: "45分钟"},
-                        {type: "listening", task: "FIB-L 第二遍 (2/2) + FIB-RW 第二遍 (2/2)", time: "45分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 第二遍 (3/3)", time: "15分钟"},
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
+                        {type: "listening", subtype: "WFD", task: "WFD 背题库第二遍 (2/3)", time: "45分钟"},
+                        {type: "listening", subtype: "FIB-L", task: "FIB-L 第二遍 (2/2)", time: "25分钟"},
+                        {type: "reading", subtype: "FIB-RW", task: "FIB-RW 第二遍 (2/2)", time: "20分钟"}
                     ],
                     "周四": [
-                        {type: "speaking", task: "RS 第三遍 (1/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
-                        {type: "listening", task: "WFD 背题库第二遍 (3/3)", time: "45分钟"},
-                        {type: "reading", task: "RO 顺口溜第二遍 + FIB-R 第二遍 (2/2)", time: "60分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 第三遍 (1/3)", time: "15分钟"},
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
+                        {type: "listening", subtype: "WFD", task: "WFD 背题库第二遍 (3/3)", time: "45分钟"},
+                        {type: "reading", subtype: "RO", task: "RO 顺口溜第二遍", time: "30分钟"},
+                        {type: "reading", subtype: "FIB-R", task: "FIB-R 第二遍 (2/2)", time: "30分钟"}
                     ],
                     "周五": [
-                        {type: "speaking", task: "RS 第三遍 (2/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
-                        {type: "writing", task: "复习 WE, SST, SWT", time: "45分钟"},
-                        {type: "listening", task: "FIB-L 第三遍完整复习 + FIB-RW 第三遍", time: "45分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 第三遍 (2/3)", time: "15分钟"},
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
+                        {type: "writing", subtype: "WE", task: "复习 WE, SWT", time: "30分钟"},
+                        {type: "listening", subtype: "SST", task: "复习 SST", time: "15分钟"},
+                        {type: "listening", subtype: "FIB-L", task: "FIB-L 第三遍完整复习", time: "25分钟"},
+                        {type: "reading", subtype: "FIB-RW", task: "FIB-RW 第三遍", time: "20分钟"}
                     ],
                     "周六": [
-                        {type: "speaking", task: "RS 第三遍 (3/3) + RA 5题 + 复习RTS, DI, ASQ", time: "20分钟"},
-                        {type: "listening", task: "WFD 背题库第三遍完整复习", time: "45分钟"},
-                        {type: "reading", task: "总复习 FIB-RW, FIB-L, FIB-R, RO", time: "60分钟"}
+                        {type: "speaking", subtype: "RS", task: "RS 第三遍 (3/3)", time: "15分钟"},
+                        {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
+                        {type: "listening", subtype: "WFD", task: "WFD 背题库第三遍完整复习", time: "45分钟"},
+                        {type: "reading", subtype: "FIB-RW", task: "总复习 FIB-RW, FIB-L, FIB-R, RO", time: "60分钟"}
                     ]
                 }
             }
@@ -830,12 +948,22 @@
             tasks.forEach((task, index) => {
                 const taskDiv = document.createElement('div');
                 taskDiv.className = 'task-editor';
+                
+                // 生成题型子选项
+                const subtypeOptions = task.type && subtypeMap[task.type] ? 
+                    subtypeMap[task.type].subtypes.map(st => 
+                        `<option value="${st}" ${task.subtype === st ? 'selected' : ''}>${st}</option>`
+                    ).join('') : '';
+                
                 taskDiv.innerHTML = `
-                    <select class="task-type-select" onchange="updateTask('${weekName}', '${dayName}', ${index}, 'type', this.value)">
+                    <select class="task-type-select" onchange="updateTaskType('${weekName}', '${dayName}', ${index}, this.value)">
                         <option value="speaking" ${task.type === 'speaking' ? 'selected' : ''}>口语</option>
                         <option value="writing" ${task.type === 'writing' ? 'selected' : ''}>写作</option>
                         <option value="listening" ${task.type === 'listening' ? 'selected' : ''}>听力</option>
                         <option value="reading" ${task.type === 'reading' ? 'selected' : ''}>阅读</option>
+                    </select>
+                    <select class="task-subtype-select" onchange="updateTask('${weekName}', '${dayName}', ${index}, 'subtype', this.value)">
+                        ${subtypeOptions}
                     </select>
                     <input type="text" class="task-input" value="${task.task}" 
                            onchange="updateTask('${weekName}', '${dayName}', ${index}, 'task', this.value)" 
@@ -847,6 +975,21 @@
                 `;
                 container.appendChild(taskDiv);
             });
+        }
+
+        // 更新任务类型
+        function updateTaskType(weekName, dayName, taskIndex, newType) {
+            if (!currentSchedule.weeks[weekName] || !currentSchedule.weeks[weekName][dayName]) return;
+            
+            if (currentSchedule.weeks[weekName][dayName][taskIndex]) {
+                currentSchedule.weeks[weekName][dayName][taskIndex].type = newType;
+                // 设置新类型的第一个子类型
+                if (subtypeMap[newType]) {
+                    currentSchedule.weeks[weekName][dayName][taskIndex].subtype = subtypeMap[newType].subtypes[0];
+                }
+                generateDayEditors(weekName);
+                updateDisplay();
+            }
         }
 
         // 更新任务
@@ -866,6 +1009,7 @@
             
             currentSchedule.weeks[weekName][dayName].push({
                 type: 'speaking',
+                subtype: 'RA',
                 task: '新任务',
                 time: '30分钟'
             });
@@ -962,6 +1106,7 @@
                             <input type="checkbox" class="task-checkbox" data-week="${weekName}" data-day="${dayName}" data-task="${index}">
                             <div style="display: flex; align-items: center; flex: 1; flex-wrap: wrap; gap: 8px;">
                                 <span class="task-text">${task.task}</span>
+                                ${task.subtype ? `<span class="task-subtype-badge subtype-${task.type}">${task.subtype}</span>` : ''}
                                 <span class="task-time-badge">${task.time}</span>
                             </div>
                         `;
@@ -1091,7 +1236,7 @@
 
         // 导出Excel格式
         function exportToExcel() {
-            let csvContent = "周次,日期,任务类型,任务内容,时间,完成状态\n";
+            let csvContent = "周次,日期,任务类型,题型,任务内容,时间,完成状态\n";
             
             Object.keys(currentSchedule.weeks).forEach(weekName => {
                 Object.keys(currentSchedule.weeks[weekName]).forEach(dayName => {
@@ -1105,7 +1250,7 @@
                             reading: "阅读"
                         };
                         
-                        csvContent += `"${weekName}","${dayName}","${typeMap[task.type]}","${task.task}","${task.time}","${status}"\n`;
+                        csvContent += `"${weekName}","${dayName}","${typeMap[task.type]}","${task.subtype || ''}","${task.task}","${task.time}","${status}"\n`;
                     });
                 });
             });
