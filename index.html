@@ -350,6 +350,7 @@
         .task-item.writing { border-left-color: #48bb78; }
         .task-item.listening { border-left-color: #4299e1; }
         .task-item.reading { border-left-color: #ed8936; }
+        .task-item.review { border-left-color: #9f7aea; }
         
         .task-checkbox {
             margin-right: 12px;
@@ -394,6 +395,7 @@
         .subtype-writing { background: #48bb78; }
         .subtype-listening { background: #4299e1; }
         .subtype-reading { background: #ed8936; }
+        .subtype-review { background: #9f7aea; }
         
         .progress-section {
             background: white;
@@ -698,6 +700,10 @@
             <div class="legend-color" style="background: #ed8936;"></div>
             <span>阅读练习</span>
         </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #9f7aea;"></div>
+            <span>综合复习</span>
+        </div>
     </div>
 
     <!-- 计划显示区域 -->
@@ -712,19 +718,23 @@
         const subtypeMap = {
             speaking: {
                 name: "口语",
-                subtypes: ["RA", "RS", "DI", "RTS", "ASQ"]
+                subtypes: ["RA", "RS", "DI", "RTS", "ASQ", "口语综合"]
             },
             writing: {
                 name: "写作",
-                subtypes: ["WE", "SWT"]
+                subtypes: ["WE", "SWT", "写作综合"]
             },
             reading: {
                 name: "阅读",
-                subtypes: ["FIB-RW", "MCM-R", "RO", "FIB-R", "MCS-R"]
+                subtypes: ["FIB-RW", "MCM-R", "RO", "FIB-R", "MCS-R", "阅读综合"]
             },
             listening: {
                 name: "听力",
-                subtypes: ["SST", "MCM-L", "FIB-L", "MCS-L", "SMW", "HIW", "WFD"]
+                subtypes: ["SST", "MCM-L", "FIB-L", "MCS-L", "SMW", "HIW", "WFD", "听力综合"]
+            },
+            review: {
+                name: "复习",
+                subtypes: ["综合复习", "题型复习", "错题复习", "模考复习"]
             }
         };
 
@@ -762,7 +772,7 @@
                     "周六": [
                         {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "15分钟"},
                         {type: "writing", subtype: "WE", task: "WE #9-10 写作并背熟", time: "45分钟"},
-                        {type: "reading", subtype: "FIB-RW", task: "复习本周FIB-RW和FIB-R", time: "60分钟"}
+                        {type: "review", subtype: "题型复习", task: "复习本周FIB-RW和FIB-R", time: "60分钟"}
                     ]
                 },
                 "第二周": {
@@ -775,7 +785,7 @@
                     ],
                     "周二": [
                         {type: "speaking", subtype: "RS", task: "RS 背题库第二遍 (1/2)", time: "30分钟"},
-                        {type: "writing", subtype: "WE", task: "复习所有写过的WE", time: "30分钟"},
+                        {type: "review", subtype: "题型复习", task: "复习所有写过的WE", time: "30分钟"},
                         {type: "listening", subtype: "FIB-L", task: "FIB-L 练习PDF (2/3)", time: "45分钟"}
                     ],
                     "周三": [
@@ -800,15 +810,15 @@
                         {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
                         {type: "speaking", subtype: "ASQ", task: "ASQ (4/4)", time: "10分钟"},
                         {type: "listening", subtype: "WFD", task: "WFD 背题库第一遍 (4/4)", time: "45分钟"},
-                        {type: "listening", subtype: "FIB-L", task: "复习本周所有FIB-L", time: "60分钟"}
+                        {type: "review", subtype: "题型复习", task: "复习本周所有FIB-L", time: "60分钟"}
                     ]
                 },
                 "第三周": {
                     "周一": [
                         {type: "speaking", subtype: "RS", task: "RS 第二遍 (1/3)", time: "15分钟"},
                         {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
-                        {type: "writing", subtype: "WE", task: "复习 WE, SWT", time: "30分钟"},
-                        {type: "listening", subtype: "SST", task: "复习 SST", time: "15分钟"},
+                        {type: "review", subtype: "综合复习", task: "复习 WE, SWT", time: "30分钟"},
+                        {type: "review", subtype: "题型复习", task: "复习 SST", time: "15分钟"},
                         {type: "listening", subtype: "FIB-L", task: "FIB-L 第二遍 (1/2)", time: "25分钟"},
                         {type: "reading", subtype: "FIB-RW", task: "FIB-RW 第二遍 (1/2)", time: "20分钟"}
                     ],
@@ -836,8 +846,8 @@
                     "周五": [
                         {type: "speaking", subtype: "RS", task: "RS 第三遍 (2/3)", time: "15分钟"},
                         {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
-                        {type: "writing", subtype: "WE", task: "复习 WE, SWT", time: "30分钟"},
-                        {type: "listening", subtype: "SST", task: "复习 SST", time: "15分钟"},
+                        {type: "review", subtype: "综合复习", task: "复习 WE, SWT", time: "30分钟"},
+                        {type: "review", subtype: "题型复习", task: "复习 SST", time: "15分钟"},
                         {type: "listening", subtype: "FIB-L", task: "FIB-L 第三遍完整复习", time: "25分钟"},
                         {type: "reading", subtype: "FIB-RW", task: "FIB-RW 第三遍", time: "20分钟"}
                     ],
@@ -845,7 +855,7 @@
                         {type: "speaking", subtype: "RS", task: "RS 第三遍 (3/3)", time: "15分钟"},
                         {type: "speaking", subtype: "RA", task: "RA 5题练习", time: "10分钟"},
                         {type: "listening", subtype: "WFD", task: "WFD 背题库第三遍完整复习", time: "45分钟"},
-                        {type: "reading", subtype: "FIB-RW", task: "总复习 FIB-RW, FIB-L, FIB-R, RO", time: "60分钟"}
+                        {type: "review", subtype: "综合复习", task: "总复习 FIB-RW, FIB-L, FIB-R, RO", time: "60分钟"}
                     ]
                 }
             }
@@ -962,6 +972,7 @@
                         <option value="writing" ${task.type === 'writing' ? 'selected' : ''}>写作</option>
                         <option value="listening" ${task.type === 'listening' ? 'selected' : ''}>听力</option>
                         <option value="reading" ${task.type === 'reading' ? 'selected' : ''}>阅读</option>
+                        <option value="review" ${task.type === 'review' ? 'selected' : ''}>复习</option>
                     </select>
                     <select class="task-subtype-select" onchange="updateTask('${weekName}', '${dayName}', ${index}, 'subtype', this.value)">
                         ${subtypeOptions}
@@ -1248,7 +1259,8 @@
                             speaking: "口语",
                             writing: "写作", 
                             listening: "听力",
-                            reading: "阅读"
+                            reading: "阅读",
+                            review: "复习"
                         };
                         
                         csvContent += `"${weekName}","${dayName}","${typeMap[task.type]}","${task.subtype || ''}","${task.task}","${task.time}","${status}"\n`;
